@@ -1,0 +1,9 @@
+#+TITLE: Pathfinding Visulization
+* Compile and Run
+#+BEGIN_EXAMPLE
+make compile
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+make run
+#+END_EXAMPLE
