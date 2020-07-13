@@ -2,5 +2,8 @@ public enum NodeType {
     EMPTY, 
     BARRIER, 
     START, 
-    GOAL;
+    GOAL,
+    VISITIED,
+    FRONTIER,
+    PATH;
 }

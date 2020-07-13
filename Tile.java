@@ -8,11 +8,17 @@ import javafx.event.EventHandler;
 import javafx.scene.input.*;
 
 public class Tile extends StackPane {
+    public int x;
+    public int y;
+
     public NodeType type;
     private Rectangle rect;
     private Text text;
 
-    public Tile(double size) {
+    public Tile(int x, int y, double size) {
+        this.x = x;
+        this.y = y;
+
         text = new Text();
         text.setFont(Font.font(12));
         
@@ -133,6 +139,15 @@ public class Tile extends StackPane {
                 break;
             case GOAL:
                 rect.setFill(Color.RED);
+                break;
+            case VISITIED:
+                rect.setFill(Color.TAN);
+                break;
+            case FRONTIER:
+                rect.setFill(Color.BLUE);
+                break;
+            case PATH:
+                rect.setFill(Color.YELLOW);
                 break;
             default:
                 rect.setFill(Color.WHITE);
