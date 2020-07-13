@@ -23,13 +23,13 @@ public class Main extends Application {
         tiles = new Tile[GRID_SIZE][GRID_SIZE];
 
         double tileSize = SIZE / GRID_SIZE;
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                Tile tile = new Tile(j, i, tileSize);
-                tile.setTranslateX(j * tileSize);
-                tile.setTranslateY(i * tileSize);
+        for (int y = 0; y < GRID_SIZE; y++) {
+            for (int x = 0; x < GRID_SIZE; x++) {
+                Tile tile = new Tile(x, y, tileSize);
+                tile.setTranslateX(x * tileSize);
+                tile.setTranslateY(y * tileSize);
 
-                tiles[i][j] = tile;
+                tiles[x][y] = tile;
                 root.getChildren().add(tile);
             }
         }
@@ -83,7 +83,7 @@ public class Main extends Application {
             }
         }
 
-        Pathfinding.BreathFirstSearch(start, goal, tiles);
+        Pathfinding.GreedyBestFirstSearch(start, goal, tiles);
 
     }
 }
