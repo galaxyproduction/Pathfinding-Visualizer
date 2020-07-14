@@ -45,8 +45,6 @@ public class Pathfinding {
             current.SetType(NodeType.PATH);
             current = cameFrom.get(current);
         }
-        
-        Collections.reverse(path);
     }
 
     public static void GreedyBestFirstSearch(Tile start, Tile goal, Tile[][] tiles){
@@ -90,8 +88,53 @@ public class Pathfinding {
             current.SetType(NodeType.PATH);
             current = cameFrom.get(current);
         }
-        
-        Collections.reverse(path);
+    }
+
+    public static void AStar(Tile start, Tile goal, Tile[][] tiles){
+        PriorityQueue<Pair<Tile, Integer>> frontier = new PriorityQueue<>(new Comparator<Pair<Tile, Integer>>(){
+            @Override
+            public int compare(Pair<Tile, Integer> o1, Pair<Tile, Integer> o2) {
+                return Integer.compare(o1.getValue(), o2.getValue());
+            }
+        });
+        frontier.add(new Pair<Tile, Integer>(start, 0));
+        HashMap<Tile, Tile> cameFrom = new HashMap<>();
+        cameFrom.put(start, null);
+        HashMap<Tile, Integer> costSoFar = new HashMap<>();
+        costSoFar.put(start, 0);
+
+        while(!frontier.isEmpty()){
+            Tile current = frontier.poll().getKey();
+            current.SetType(NodeType.VISITIED);
+
+            if(current == goal)
+                break;
+
+            for(Tile next : GetNeighbors(current, tiles)){
+                int newCost = costSoFar.get(current);
+                if(!costSoFar.containsKey(next) || newCost < costSoFar.get(next)) {
+                    costSoFar.put(next, newCost);
+                    int priority = newCost + Heuristic(goal, next);
+                    frontier.add(new Pair<Tile, Integer>(next, priority));
+                    next.SetType(NodeType.FRONTIER);
+                    cameFrom.put(next, current);
+                }
+            }
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Tile current = goal;
+        ArrayList<Tile> path = new ArrayList<Tile>();
+        while(current != null){
+            path.add(current);
+            current.SetType(NodeType.PATH);
+            current = cameFrom.get(current);
+        }
     }
 
     private static int Heuristic(Tile a, Tile b){

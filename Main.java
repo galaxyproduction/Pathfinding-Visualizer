@@ -83,7 +83,7 @@ public class Main extends Application {
             }
         }
 
-        Pathfinding.GreedyBestFirstSearch(start, goal, tiles);
+        Pathfinding.AStar(start, goal, tiles);
 
     }
 }
