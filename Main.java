@@ -1,3 +1,5 @@
+import java.util.Random;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,22 +14,23 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 public class Main extends Application {
-    public static boolean hasAnimated = false;
+    public static boolean isAnimationPlaying = false;
 
-    private static final int SIZE = 600;
-    private static final int GRID_SIZE = 15;
+    private static final int SIZE = 500; // Size in pixels of the grid
+    private static final int GRID_SIZE = 15; // Number of tiles in the grid
+    private ComboBox<String> algorithmSelect; // Drop down menu to select which algorithm to use
 
     private Tile[][] tiles;
     private Tile start;
     private Tile goal;
 
-    ComboBox<String> algorithmSelect;
-
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Root pane that holds the UI elements and the grid
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(8, 8, 16, 8));
 
+        // Handles spacing of UI elements
         GridPane grid = new GridPane();
         grid.setHgap(10);
 
@@ -43,6 +46,7 @@ public class Main extends Application {
         runBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                // Run button runs algorithm on a different thread than the GUI
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -57,10 +61,12 @@ public class Main extends Application {
 
         grid.getChildren().addAll(algorithmLabel, algorithmSelect, runBtn);
 
+        // Stackpane holds the tiles of the grid
         StackPane stackPane = new StackPane();
         stackPane.setPrefSize(SIZE, SIZE);
         stackPane.setPadding(new Insets(8, 0, 0, 0));
 
+        Random rnd = new Random();
         tiles = new Tile[GRID_SIZE][GRID_SIZE];
         double tileSize = SIZE / GRID_SIZE;
         for (int y = 0; y < GRID_SIZE; y++) {
@@ -69,21 +75,27 @@ public class Main extends Application {
                 tile.setTranslateX(x * tileSize);
                 tile.setTranslateY(y * tileSize);
 
+                if(rnd.nextDouble() > 0.7)
+                    tile.SetType(NodeType.BARRIER);
+
                 tiles[x][y] = tile;
                 stackPane.getChildren().add(tile);
             }
         }
 
+        // Initially sets the start and end tiles to the first and last element of the
+        // grid
         tiles[0][0].SetType(NodeType.START);
         tiles[GRID_SIZE - 1][GRID_SIZE - 1].SetType(NodeType.GOAL);
-
-        ResetTiles();
+        start = tiles[0][0];
+        goal = tiles[GRID_SIZE - 1][GRID_SIZE - 1];
 
         root.setTop(grid);
         root.setCenter(stackPane);
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setMaximized(true);
         primaryStage.setTitle("Pathfinding Visualization");
         primaryStage.show();
     }
@@ -93,10 +105,16 @@ public class Main extends Application {
     }
 
     private void StartAnimation() {
-        ResetTiles();
+        // Quits if an animation is already playing, otherwise resets tiles
+        if (isAnimationPlaying) {
+            return;
+        } else {
+            ResetTiles();
+        }
 
-        hasAnimated = true;
-        switch(algorithmSelect.getValue()){
+        isAnimationPlaying = true;
+        // Selects which pathfinding algorithm to use according to the drop down menu
+        switch (algorithmSelect.getValue()) {
             case "Breath First Search":
                 Pathfinding.BreathFirstSearch(start, goal, tiles);
                 break;
@@ -108,30 +126,30 @@ public class Main extends Application {
                 break;
         }
 
-        hasAnimated = false;
+        isAnimationPlaying = false;
         start.SetType(NodeType.START);
         goal.SetType(NodeType.GOAL);
     }
 
+    // Finds the start and end nodes on the grid, and
+    // resets all tiles except barriers back to empty
     private void ResetTiles() {
         for (int y = 0; y < tiles.length; y++) {
             for (int x = 0; x < tiles[0].length; x++) {
-                if (tiles[x][y].type == NodeType.START) {
+                if (tiles[x][y].GetType() == NodeType.START) {
                     start = tiles[x][y];
                     continue;
                 }
 
-                if (tiles[x][y].type == NodeType.GOAL) {
+                if (tiles[x][y].GetType() == NodeType.GOAL) {
                     goal = tiles[x][y];
                     continue;
                 }
 
-                if(tiles[x][y].type != NodeType.BARRIER){
+                if (tiles[x][y].GetType() != NodeType.BARRIER) {
                     tiles[x][y].SetType(NodeType.EMPTY);
                 }
             }
         }
-
-        hasAnimated = false;
     }
 }

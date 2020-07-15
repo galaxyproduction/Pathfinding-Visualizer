@@ -1,57 +1,54 @@
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.paint.Color;
 import javafx.geometry.Pos;
-
-import java.util.Set;
-
 import javafx.event.EventHandler;
 import javafx.scene.input.*;
 
 public class Tile extends StackPane {
-    public int x;
-    public int y;
+    private int x;
+    private int y;
+    private int cost;
 
-    public NodeType type;
+    private NodeType type;
     private Rectangle rect;
-    private Text text;
 
     public Tile(int x, int y, double size) {
         this.x = x;
         this.y = y;
-
-        text = new Text();
-        text.setFont(Font.font(12));
+        this.cost = 0;
 
         rect = new Rectangle(size, size);
         rect.setFill(Color.WHITE);
         rect.setStroke(Color.BLACK);
 
         setAlignment(Pos.TOP_LEFT);
-        getChildren().addAll(rect, text);
+        getChildren().addAll(rect);
 
         SetType(NodeType.EMPTY);
 
-        setOnMouseClicked(event -> {
-            if (!Main.hasAnimated) {
+        /* All UI input is blocked while animation is playing*/
+        // Toggles weather a tile is a barrier
+        setOnMousePressed(event -> {
+            if (!Main.isAnimationPlaying) {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     if (type != NodeType.START && type != NodeType.GOAL) {
-                        if (type == NodeType.EMPTY) {
-                            SetType(NodeType.BARRIER);
-                        } else {
+                        if (type == NodeType.BARRIER) {
                             SetType(NodeType.EMPTY);
+                        } else {
+                            SetType(NodeType.BARRIER);
                         }
                     }
                 }
             }
         });
 
+        /* Rest of constructor handles all drag and drop inputs */
+        // Starts the drag and drop event
         setOnDragDetected(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (!Main.hasAnimated) {
+                if (!Main.isAnimationPlaying) {
                     Dragboard db = rect.startDragAndDrop(TransferMode.ANY);
 
                     ClipboardContent content = new ClipboardContent();
@@ -64,10 +61,11 @@ public class Tile extends StackPane {
             }
         });
 
+        // Allows for the DragBoard to be copied
         setOnDragOver(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
-                if (event.getGestureSource() != rect && event.getDragboard().hasString()) {
+                if (event.getDragboard().hasString()) {
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
 
@@ -75,10 +73,12 @@ public class Tile extends StackPane {
             }
         });
 
+        // Changes the tiles color when mouse is dragged overed
         setOnDragEntered(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
-                if (event.getGestureSource() != rect && event.getDragboard().hasString()) {
+                if (event.getDragboard().hasString()) {
+                    // Can only have one start and goal node, so only a visual change when 
                     switch (event.getDragboard().getString()) {
                         case "START":
                             rect.setFill(Color.LIMEGREEN);
@@ -87,10 +87,10 @@ public class Tile extends StackPane {
                             rect.setFill(Color.TOMATO);
                             break;
                         case "EMPTY":
-                            SetType(NodeType.BARRIER);
+                            SetType(NodeType.EMPTY);
                             break;
                         case "BARRIER":
-                            SetType(NodeType.EMPTY);
+                            SetType(NodeType.BARRIER);
                             break;
                     }
                     event.consume();
@@ -98,14 +98,15 @@ public class Tile extends StackPane {
             }
         });
 
+        // Changes color back to original when mouse leaves
         setOnDragExited(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
                 if (!event.isDropCompleted()) {
-                    if (type == NodeType.BARRIER) {
-                        rect.setFill(Color.BLACK);
+                    if(type == NodeType.BARRIER){
+                        SetType(NodeType.BARRIER);
                     } else {
-                        rect.setFill(Color.WHITE);
+                        SetType(NodeType.EMPTY);
                     }
 
                     event.consume();
@@ -113,6 +114,7 @@ public class Tile extends StackPane {
             }
         });
 
+        // Changes the type of the tile when drag is finially finished
         setOnDragDropped(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
@@ -129,16 +131,19 @@ public class Tile extends StackPane {
             }
         });
 
+        // Sets tile which drag was initiated to empty
         setOnDragDone(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
-                SetType(NodeType.EMPTY);
+                if(event.getDragboard().toString() == "START" || event.getDragboard().toString() == "GOAL")
+                    SetType(NodeType.EMPTY);
 
                 event.consume();
             }
         });
     }
 
+    // The color of the tile is tied to the type so both change here
     public void SetType(NodeType nodeType) {
         type = nodeType;
 
@@ -165,5 +170,25 @@ public class Tile extends StackPane {
                 rect.setFill(Color.WHITE);
                 break;
         }
+    }
+
+    public NodeType GetType() {
+        return type;
+    }
+
+    public void SetCost(int cost){
+        this.cost = cost;
+    }
+
+    public int GetCost(){
+        return cost;
+    }
+
+    public int GetX() {
+        return x;
+    }
+
+    public int GetY() {
+        return y;
     }
 }
