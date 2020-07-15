@@ -1,9 +1,19 @@
 #+TITLE: Pathfinding Visulization
-* Compile and Run
-#+BEGIN_EXAMPLE
-make compile
-#+END_EXAMPLE
+A visualization tool to compare pathfinding algorithms. I have implemented breath first search, greedy best-first seach, and A*.
+[[./pathfindingVisualization.png]]
+* Requirements
+Java JDK + JavaFX Runtime
+* Compiling and Running
+ You may need to change the classpath to the location of the jfxrt.jar on your system in the Makefile.
 
-#+BEGIN_EXAMPLE
+ To compile:
+ #+BEGIN_SRC bash
+make compile
+ #+END_SRC
+
+To run:
+#+BEGIN_SRC bash
 make run
-#+END_EXAMPLE
+#+END_SRC
+* Authors
+Hunter Wilkins
