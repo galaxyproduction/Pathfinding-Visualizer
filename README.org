@@ -19,5 +19,5 @@ make run
 Hunter Wilkins
 
 ** Contact me!
-- <https://hunterwilkins.dev>
-- <hunter.wilkins2@gmail.com>
+- [[https://hunterwilkins.dev]]
+- [[hunter.wilkins2@gmail.com]]
