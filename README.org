@@ -17,3 +17,7 @@ make run
 #+END_SRC
 * Authors
 Hunter Wilkins
+
+** Contact me!
+- <https://hunterwilkins.dev>
+- <hunter.wilkins2@gmail.com>
