@@ -1,4 +1,4 @@
-#+TITLE: Pathfinding Visulization
+#+TITLE: Pathfinding Visulizer
 A visualization tool to compare pathfinding algorithms. I have implemented breath first search, greedy best-first seach, and A*.
 [[./pathfindingVisualization.png]]
 * Requirements
